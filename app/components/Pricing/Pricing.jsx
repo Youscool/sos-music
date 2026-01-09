@@ -1,3 +1,4 @@
+"use client"
 import { Container, Row, Col, Card, Button } from "react-bootstrap";
 
 export default function Pricing() {

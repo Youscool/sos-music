@@ -1,3 +1,4 @@
+"use client"
 import { Container, Form, Button } from "react-bootstrap";
 
 export default function Contacts() {
