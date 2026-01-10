@@ -1,0 +1,99 @@
+/* --- Styles généraux --- */
+.pricing {
+  padding: 60px 20px;
+  background: linear-gradient(120deg, #081c3a, #3a0b1f);
+  color: white;
+}
+
+.title {
+  text-align: center;
+  font-weight: 700;
+  margin-bottom: 40px;
+}
+
+.infoBox {
+  border: 1px solid #f5c400;
+  padding: 20px;
+  border-radius: 12px;
+  display: flex;
+  gap: 10px;
+  background: rgba(0, 0, 0, 0.4);
+  margin-bottom: 15px;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  background: #f5c400;
+  border-radius: 50%;
+  margin-top: 6px;
+}
+
+/* --- Tableau Desktop --- */
+.table {
+  border-radius: 12px;
+  overflow: hidden;
+  margin-top: 30px;
+}
+
+.tableHeader {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  background: #f5c400;
+  color: black;
+  font-weight: 700;
+  padding: 15px;
+  text-align: center;
+}
+
+.tableRow {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+}
+
+.tableRow small {
+  opacity: 0.7;
+}
+
+.extra {
+  margin-top: 20px;
+  font-size: 0.95rem;
+}
+
+.note {
+  margin-top: 20px;
+  background: #f5c400;
+  color: black;
+  padding: 10px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+/* --- Mobile responsive --- */
+@media (max-width: 768px) {
+  .tableHeader {
+    display: none; /* on cache le header */
+  }
+
+  .tableRow {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    background: rgba(0, 0, 0, 0.6);
+    margin-bottom: 15px;
+    padding: 15px;
+    border-radius: 12px;
+  }
+
+  .tableRow div {
+    margin-bottom: 8px;
+  }
+
+  .tableRow div:last-child {
+    margin-bottom: 0;
+  }
+}

@@ -31,3 +31,101 @@ body {
   background-color: #b8962e;
   color: #000;
 }
+.about-img-wrapper {
+  height: 500px;
+  clip-path: polygon(25% 0%, 100% 0%, 75% 100%, 0% 100%);
+}
+/*********** SERVICES ************/
+.service-card {
+  height: 250px !important;
+  transition: transform 0.3s ease;
+}
+
+.service-card:hover {
+  transform: translateY(-8px);
+}
+.service-img {
+  height: 100% !important;
+}
+.service-card .card-body{
+  background: rgba(10, 10, 10, 0.425);
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+  backdrop-filter: blur(1.8px);
+}
+/********************************* AUDIO SECTION *******************************************************/
+.audio-section {
+  background: #05051e;
+  padding: 80px 20px;
+  color: white;
+}
+
+.audio-section h2 {
+  text-align: center;
+  color: #f5c400;
+  margin-bottom: 40px;
+}
+
+.track-card {
+  background: rgba(0,0,0,0.65);
+  border: 1px solid #f5c400;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 25px;
+}
+
+.track-info h4 {
+  margin: 0;
+  color: #f5c400;
+}
+
+.download {
+  color: #f5c400;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+/* PLAYER GLOBAL */
+.global-player {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #000;
+  border-top: 2px solid #f5c400;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 999;
+}
+
+.global-player audio {
+  width: 260px;
+}
+.audio-section {
+  background: #0b0b0b;
+}
+
+.track-card {
+  background: #121212;
+  border: 1px solid rgba(245, 196, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.track-card:hover {
+  border-color: #f5c400;
+  transform: scale(1.01);
+}
+
+@media (max-width: 768px) {
+  .global-player {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .global-player audio {
+    width: 100%;
+  }
+}
