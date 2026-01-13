@@ -37,43 +37,47 @@ export default function AudioSection() {
 
   return (
     <section className="audio-section container py-5">
-      <h2 className="text-warning mb-4">Écoutez nos productions</h2>
+      <h2 className="text-warning mb-4">
+        Écoutez nos productions
+      </h2>
 
-      {tracks.map((track) => (
-        <div
-          key={track.id}
-          className="track-card d-flex align-items-center justify-content-between mb-4 p-3 rounded"
-        >
-          {/* Infos */}
-          <div>
-            <h5 className="mb-1 text-white">{track.title}</h5>
-            <small className="text-muted">{track.artist}</small>
-          </div>
+      {tracks.map((track) => {
+        const active = isCurrent(track);
 
-          {/* Waveform */}
-          <div className="flex-grow-1 mx-4">
-            <AudioWaveForm
-              url={track.audioUrl}
-              onPlay={() => playTrack(track)}
-            />
-          </div>
-
-          {/* Bouton Play / Pause */}
-          <button
-            className="btn btn-outline-warning rounded-circle d-flex align-items-center justify-content-center"
-            style={{ width: 45, height: 45 }}
-            onClick={() =>
-              isCurrent(track) ? togglePlay() : playTrack(track)
-            }
+        return (
+          <div
+            key={track.id}
+            className={`track-card d-flex align-items-center justify-content-between mb-4 p-3 rounded
+              ${active ? "active-track" : ""}`}
           >
-            {isCurrent(track) && isPlaying ? (
-              <FaPause />
-            ) : (
-              <FaPlay />
-            )}
-          </button>
-        </div>
-      ))}
+            {/* Infos */}
+            <div className="me-3">
+              <h5 className="mb-1 text-white">
+                {track.title}
+              </h5>
+              <small className="text-muted">
+                {track.artist}
+              </small>
+            </div>
+
+            {/* Waveform */}
+            <div className="flex-grow-1 mx-4">
+              <AudioWaveForm url={track.audioUrl} />
+            </div>
+
+            {/* Play / Pause */}
+            <button
+              className="btn btn-outline-warning rounded-circle d-flex align-items-center justify-content-center"
+              style={{ width: 45, height: 45 }}
+              onClick={() =>
+                active ? togglePlay() : playTrack(track)
+              }
+            >
+              {active && isPlaying ? <FaPause /> : <FaPlay />}
+            </button>
+          </div>
+        );
+      })}
     </section>
   );
 }
