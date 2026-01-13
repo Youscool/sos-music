@@ -29,7 +29,7 @@ export default function Header() {
            marginTop: "300px"
             }}>
             <h1 className="display-4 fw-bold text-white text-uppercase">
-             Studio <span className="text-warning">d'enregistrement </span><br/> moderne
+             Studio <span className="text-warning">d'enregistremen </span><br/> moderne
             </h1>
             <p className="text-warning fs-5 mt-3">
               Rec • Mix • Master de vos sons

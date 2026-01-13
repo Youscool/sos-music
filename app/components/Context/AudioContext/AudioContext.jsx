@@ -9,16 +9,22 @@ export function AudioProvider({ children }) {
   const [currentTrack, setCurrentTrack] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
-  const [duration, setDuration] = useState(0);     // durée totale
-  const [currentTime, setCurrentTime] = useState(0); // temps actuel
+  const [duration, setDuration] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
 
   /* ------------------ CONTROLES ------------------ */
 
   const playTrack = (track) => {
-    if (track) {
+    if (!audioRef.current) return;
+
+    // Nouveau track → on change seulement le src
+    if (track && track.audioUrl !== currentTrack?.audioUrl) {
       setCurrentTrack(track);
+      return;
     }
-    audioRef.current?.play();
+
+    // Même track → play
+    audioRef.current.play();
     setIsPlaying(true);
   };
 
@@ -29,7 +35,8 @@ export function AudioProvider({ children }) {
 
   const togglePlay = () => {
     if (!audioRef.current) return;
-    isPlaying ? pause() : playTrack();
+    isPlaying ? pause() : audioRef.current.play();
+    setIsPlaying(!isPlaying);
   };
 
   const seek = (time) => {
@@ -59,6 +66,25 @@ export function AudioProvider({ children }) {
     };
   }, []);
 
+  /* ▶️ PLAY APRÈS CHANGEMENT DE TRACK (FIX ERREUR) */
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio || !currentTrack) return;
+
+    audio.load();
+
+    const onCanPlay = () => {
+      audio.play();
+      setIsPlaying(true);
+    };
+
+    audio.addEventListener("canplay", onCanPlay);
+
+    return () => {
+      audio.removeEventListener("canplay", onCanPlay);
+    };
+  }, [currentTrack]);
+
   return (
     <AudioContext.Provider
       value={{
@@ -69,7 +95,7 @@ export function AudioProvider({ children }) {
 
         duration,
         currentTime,
-        remainingTime: duration - currentTime,
+        remainingTime: Math.max(duration - currentTime, 0),
 
         playTrack,
         pause,
@@ -80,11 +106,7 @@ export function AudioProvider({ children }) {
       {children}
 
       {/* AUDIO GLOBAL */}
-      <audio
-        ref={audioRef}
-        src={currentTrack?.audioUrl}
-        preload="metadata"
-      />
+      <audio ref={audioRef} preload="metadata" />
     </AudioContext.Provider>
   );
 }
