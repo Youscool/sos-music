@@ -55,7 +55,7 @@ export default function AudioSection() {
               <h5 className="mb-1 text-white">
                 {track.title}
               </h5>
-              <small className="text-muted">
+              <small className="text-secondary">
                 {track.artist}
               </small>
             </div>

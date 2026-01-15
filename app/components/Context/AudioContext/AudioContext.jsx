@@ -1,7 +1,15 @@
 "use client";
-import { createContext, useContext, useRef, useState, useEffect } from "react";
 
-const AudioContext = createContext();
+import {
+  createContext,
+  useContext,
+  useRef,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
+
+const AudioContext = createContext(null);
 
 export function AudioProvider({ children }) {
   const audioRef = useRef(null);
@@ -14,36 +22,49 @@ export function AudioProvider({ children }) {
 
   /* ------------------ CONTROLES ------------------ */
 
-  const playTrack = (track) => {
-    if (!audioRef.current) return;
+  const playTrack = useCallback((track) => {
+    if (!track) return;
 
-    // Nouveau track → on change seulement le src
-    if (track && track.audioUrl !== currentTrack?.audioUrl) {
-      setCurrentTrack(track);
-      return;
-    }
+    setCurrentTrack((prev) => {
+      if (prev?.audioUrl === track.audioUrl) {
+        return prev;
+      }
+      return track;
+    });
+  }, []);
 
-    // Même track → play
-    audioRef.current.play();
-    setIsPlaying(true);
-  };
+  const pause = useCallback(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
 
-  const pause = () => {
-    audioRef.current?.pause();
+    audio.pause();
     setIsPlaying(false);
-  };
+  }, []);
 
-  const togglePlay = () => {
-    if (!audioRef.current) return;
-    isPlaying ? pause() : audioRef.current.play();
-    setIsPlaying(!isPlaying);
-  };
+  const togglePlay = useCallback(async () => {
+    const audio = audioRef.current;
+    if (!audio) return;
 
-  const seek = (time) => {
-    if (!audioRef.current) return;
-    audioRef.current.currentTime = time;
+    if (isPlaying) {
+      audio.pause();
+      setIsPlaying(false);
+    } else {
+      try {
+        await audio.play();
+        setIsPlaying(true);
+      } catch (err) {
+        console.error("Lecture bloquée par le navigateur :", err);
+      }
+    }
+  }, [isPlaying]);
+
+  const seek = useCallback((time) => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    audio.currentTime = time;
     setCurrentTime(time);
-  };
+  }, []);
 
   /* ------------------ EVENTS AUDIO ------------------ */
 
@@ -51,38 +72,44 @@ export function AudioProvider({ children }) {
     const audio = audioRef.current;
     if (!audio) return;
 
-    const updateTime = () => setCurrentTime(audio.currentTime);
-    const updateDuration = () => setDuration(audio.duration || 0);
-    const onEnded = () => setIsPlaying(false);
+    const handleTimeUpdate = () =>
+      setCurrentTime(audio.currentTime);
 
-    audio.addEventListener("timeupdate", updateTime);
-    audio.addEventListener("loadedmetadata", updateDuration);
-    audio.addEventListener("ended", onEnded);
+    const handleLoadedMetadata = () =>
+      setDuration(audio.duration || 0);
+
+    const handleEnded = () => {
+      setIsPlaying(false);
+      setCurrentTime(0);
+    };
+
+    audio.addEventListener("timeupdate", handleTimeUpdate);
+    audio.addEventListener("loadedmetadata", handleLoadedMetadata);
+    audio.addEventListener("ended", handleEnded);
 
     return () => {
-      audio.removeEventListener("timeupdate", updateTime);
-      audio.removeEventListener("loadedmetadata", updateDuration);
-      audio.removeEventListener("ended", onEnded);
+      audio.removeEventListener("timeupdate", handleTimeUpdate);
+      audio.removeEventListener("loadedmetadata", handleLoadedMetadata);
+      audio.removeEventListener("ended", handleEnded);
     };
   }, []);
 
-  /* ▶️ PLAY APRÈS CHANGEMENT DE TRACK (FIX ERREUR) */
+  /* ▶️ AUTO PLAY APRÈS CHANGEMENT DE TRACK */
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio || !currentTrack) return;
 
-    audio.load();
-
-    const onCanPlay = () => {
-      audio.play();
-      setIsPlaying(true);
+    const playNewTrack = async () => {
+      try {
+        await audio.play();
+        setIsPlaying(true);
+      } catch (err) {
+        console.warn("Autoplay bloqué :", err);
+        setIsPlaying(false);
+      }
     };
 
-    audio.addEventListener("canplay", onCanPlay);
-
-    return () => {
-      audio.removeEventListener("canplay", onCanPlay);
-    };
+    playNewTrack();
   }, [currentTrack]);
 
   return (
@@ -105,12 +132,27 @@ export function AudioProvider({ children }) {
     >
       {children}
 
-      {/* AUDIO GLOBAL */}
-      <audio ref={audioRef} preload="metadata" />
+    {/* AUDIO GLOBAL */}
+{currentTrack && (
+  <audio
+    ref={audioRef}
+    src={currentTrack.audioUrl}
+    preload="metadata"
+    playsInline
+  />
+)}
     </AudioContext.Provider>
   );
 }
 
+/* ------------------ HOOK ------------------ */
+
 export function useAudio() {
-  return useContext(AudioContext);
+  const context = useContext(AudioContext);
+  if (!context) {
+    throw new Error(
+      "useAudio doit être utilisé à l'intérieur de AudioProvider"
+    );
+  }
+  return context;
 }
