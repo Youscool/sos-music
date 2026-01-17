@@ -73,7 +73,11 @@ body {
 }
 .about-img-wrapper {
   height: 500px;
-  clip-path: polygone(50% 0%,83% 12%,100% 43%,94% 78%,68% 100%,32% 100%,6% 78%,0% 43%,17% 12%) ;}
+  
+}
+.about-img-wrapper img{
+box-shadow: 5px 5px 8px var(--gold);
+}
 /*********** SERVICES ************/
 .service-card {
   height: 250px !important;
