@@ -17,20 +17,27 @@ export function AudioProvider({ children }) {
   const [currentTrack, setCurrentTrack] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
-  const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
 
   /* ------------------ CONTROLES ------------------ */
 
-  const playTrack = useCallback((track) => {
-    if (!track) return;
+  const playTrack = useCallback(async (track) => {
+    const audio = audioRef.current;
+    if (!audio || !track) return;
 
-    setCurrentTrack((prev) => {
-      if (prev?.audioUrl === track.audioUrl) {
-        return prev;
-      }
-      return track;
-    });
+    // Nouveau track
+    if (audio.src !== track.audioUrl) {
+      audio.src = track.audioUrl;
+      setCurrentTrack(track);
+    }
+
+    try {
+      await audio.play();
+      setIsPlaying(true);
+    } catch (err) {
+      console.error("Lecture bloquée :", err);
+    }
   }, []);
 
   const pause = useCallback(() => {
@@ -53,7 +60,7 @@ export function AudioProvider({ children }) {
         await audio.play();
         setIsPlaying(true);
       } catch (err) {
-        console.error("Lecture bloquée par le navigateur :", err);
+        console.error("Lecture bloquée :", err);
       }
     }
   }, [isPlaying]);
@@ -65,6 +72,19 @@ export function AudioProvider({ children }) {
     audio.currentTime = time;
     setCurrentTime(time);
   }, []);
+  /* ------------------ STOP AUDIO ------------------ */
+const stop = useCallback(() => {
+  const audio = audioRef.current;
+  if (!audio) return;
+
+  audio.pause();
+  audio.currentTime = 0;
+
+  setIsPlaying(false);
+  setCurrentTime(0);
+  setDuration(0);
+  setCurrentTrack(null);
+}, []);
 
   /* ------------------ EVENTS AUDIO ------------------ */
 
@@ -72,45 +92,27 @@ export function AudioProvider({ children }) {
     const audio = audioRef.current;
     if (!audio) return;
 
-    const handleTimeUpdate = () =>
+    const onTimeUpdate = () =>
       setCurrentTime(audio.currentTime);
 
-    const handleLoadedMetadata = () =>
+    const onLoadedMetadata = () =>
       setDuration(audio.duration || 0);
 
-    const handleEnded = () => {
+    const onEnded = () => {
       setIsPlaying(false);
       setCurrentTime(0);
     };
 
-    audio.addEventListener("timeupdate", handleTimeUpdate);
-    audio.addEventListener("loadedmetadata", handleLoadedMetadata);
-    audio.addEventListener("ended", handleEnded);
+    audio.addEventListener("timeupdate", onTimeUpdate);
+    audio.addEventListener("loadedmetadata", onLoadedMetadata);
+    audio.addEventListener("ended", onEnded);
 
     return () => {
-      audio.removeEventListener("timeupdate", handleTimeUpdate);
-      audio.removeEventListener("loadedmetadata", handleLoadedMetadata);
-      audio.removeEventListener("ended", handleEnded);
+      audio.removeEventListener("timeupdate", onTimeUpdate);
+      audio.removeEventListener("loadedmetadata", onLoadedMetadata);
+      audio.removeEventListener("ended", onEnded);
     };
   }, []);
-
-  /* ▶️ AUTO PLAY APRÈS CHANGEMENT DE TRACK */
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio || !currentTrack) return;
-
-    const playNewTrack = async () => {
-      try {
-        await audio.play();
-        setIsPlaying(true);
-      } catch (err) {
-        console.warn("Autoplay bloqué :", err);
-        setIsPlaying(false);
-      }
-    };
-
-    playNewTrack();
-  }, [currentTrack]);
 
   return (
     <AudioContext.Provider
@@ -120,27 +122,25 @@ export function AudioProvider({ children }) {
         currentTrack,
         isPlaying,
 
-        duration,
         currentTime,
+        duration,
         remainingTime: Math.max(duration - currentTime, 0),
 
         playTrack,
         pause,
         togglePlay,
         seek,
+        stop,
       }}
     >
       {children}
 
-    {/* AUDIO GLOBAL */}
-{currentTrack && (
-  <audio
-    ref={audioRef}
-    src={currentTrack.audioUrl}
-    preload="metadata"
-    playsInline
-  />
-)}
+      {/* AUDIO GLOBAL : toujours présent */}
+      <audio
+        ref={audioRef}
+        preload="metadata"
+        playsInline
+      />
     </AudioContext.Provider>
   );
 }

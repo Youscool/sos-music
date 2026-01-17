@@ -1,6 +1,6 @@
-"use client"
+"use client";
+import { FaPause, FaPlay } from "react-icons/fa";
 import { useAudio } from "../Context/AudioContext/AudioContext";
-
 
 export default function GlobalPlayer() {
   const {
@@ -9,35 +9,63 @@ export default function GlobalPlayer() {
     togglePlay,
     currentTime,
     duration,
-    remainingTime,
     seek,
+    stop,
   } = useAudio();
 
   if (!currentTrack) return null;
 
-  return (
-    <div className="global-player">
-      <h5>{currentTrack.title}</h5>
+  const formatTime = (time) => {
+    if (isNaN(time)) return "0:00";
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60)
+      .toString()
+      .padStart(2, "0");
+    return `${minutes}:${seconds}`;
+  };
 
-      <button onClick={togglePlay}>
-        {isPlaying ? "⏸ Pause" : "▶️ Play"}
+  return (
+    <div className="global-player shadow-lg">
+      {/* EXIT */}
+      <button
+        className="exit-btn"
+        onClick={stop}
+        aria-label="Fermer le player"
+      >
+        ✕
       </button>
 
-      <input
-        type="range"
-        min={0}
-        max={duration}
-        value={currentTime}
-        onChange={(e) => seek(Number(e.target.value))}
-      />
+      <div className="player-info">
+        <h6 className="track-title">
+          {currentTrack.title}
+        </h6>
+      </div>
 
-      <div>
-        {Math.floor(currentTime)}s / {Math.floor(duration)}s
-        {" • "}
-        -{Math.floor(remainingTime)}s
+      <div className="player-controls">
+        <button
+          className="play-btn"
+          onClick={togglePlay}
+        >
+          {isPlaying ? <FaPause /> : <FaPlay />}
+        </button>
+
+        <div className="progress-wrapper">
+          <input
+            type="range"
+            min={0}
+            max={duration}
+            value={currentTime}
+            onChange={(e) =>
+              seek(Number(e.target.value))
+            }
+          />
+
+          <div className="time">
+            <span>{formatTime(currentTime)}</span>
+            <span>{formatTime(duration)}</span>
+          </div>
+        </div>
       </div>
     </div>
   );
 }
-
-
