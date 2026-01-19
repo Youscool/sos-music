@@ -16,7 +16,7 @@ export default function Services() {
         <Row>
           {services.map((service) => (
             <Col md={4} className="mb-2" key={service.id}>
-  <Card className="bg-dark text-white border-warning text-center h-100 overflow-hidden service-card">
+  <Card className="bg-dark text-white text-center h-100 overflow-hidden service-card">
     <div className="service-img position-relative">
       <Image
         src={service.img}
