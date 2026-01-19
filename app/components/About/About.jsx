@@ -8,9 +8,7 @@ export default function About() {
       <Container>
         <h2 className="section-title text-uppercase">à propos</h2>
         <Row className="align-items-center">
-          <Col md={6}>
-            <AboutCard/>
-          </Col>
+         
 <Col md={6}>
   <p>
              <span className="text-warning text-uppercase">$o$</span> Music est un <span className="text-warning">studio d’enregistrement</span> professionnel équipé de matériel de dernière génération, 
@@ -20,7 +18,9 @@ export default function About() {
 
             </p>
 </Col>
-
+ <Col md={6}>
+            <AboutCard/>
+          </Col>
         </Row>
       </Container>
     </section>

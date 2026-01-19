@@ -13,6 +13,7 @@
 .modal-content{
   background: black !important;
   color: white !important;
+   border: 1px solid #424241ee;
 }
 body {
   background-color: var(--dark);
@@ -91,7 +92,7 @@ body {
 
 /*********** SERVICES ************/
 .service-card {
-  height: 250px !important;
+  height: 300px !important;
   transition: transform 0.3s ease;
 }
 

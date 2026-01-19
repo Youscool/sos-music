@@ -15,7 +15,7 @@ export default function Services() {
         <h2 className="section-title">Nos Services</h2>
         <Row>
           {services.map((service) => (
-            <Col md={4} className="mb-2" key={service.id}>
+            <Col md={4} className="mb-4 mb-lg-0" key={service.id}>
   <Card className="bg-dark text-white text-center h-100 overflow-hidden service-card">
     <div className="service-img position-relative">
       <Image
