@@ -1,10 +1,7 @@
-"use client";
-import { useAudio } from "../Context/AudioContext/AudioContext";
-import AudioWaveForm from "../AudioWaveForm/AudioWaveForm";
-import { FaPlay, FaPause } from "react-icons/fa";
-import Player from "../Player/Player";
+import Player from "../components/Player/Player";
 
-const tracks = [
+export default function Beats(params) {
+    const tracks = [
   { 
     id: 1,
     title: "Afro Beat Session 1",
@@ -24,7 +21,9 @@ const tracks = [
     audioUrl: "/audio/Track-3.mp3",
   },
 ];
-
-export default function BeatSection() {
- return <Player title={"Nos Beats"} tracks={tracks} href={"/beats"}/>
+    return<>
+    <div className="container">
+        <Player title={"Liste des beats"} href={"#"} tracks={tracks}/>
+    </div>
+    </>
 }

@@ -1,9 +1,10 @@
+"use client"
 import { FaPause, FaPlay } from "react-icons/fa";
 import AudioWaveForm from "../AudioWaveForm/AudioWaveForm";
 import { useAudio } from "../Context/AudioContext/AudioContext";
 import DownloadBtn from "./DownloadBtn";
 import Link from "next/link";
-import { TbChevronsLeft } from "react-icons/tb"
+import { TbChevronsRight } from "react-icons/tb"
 export default function Player({ tracks, title, href }) {
   const { currentTrack, isPlaying, playTrack, togglePlay } = useAudio();
 
@@ -28,7 +29,7 @@ export default function Player({ tracks, title, href }) {
         <Link 
         href={href} 
         className="text-decoration-none link-info">
-        <TbChevronsLeft /> Voir tous
+        Voir plus {" "}<TbChevronsRight />
         </Link>
       </div>
       

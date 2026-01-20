@@ -1,8 +1,7 @@
-"use client";
+import Player from "../components/Player/Player";
 
-import Player from "../Player/Player";
-
-const tracks = [
+export default function Songs() {
+  const tracks = [
   {
     id: 1,
     title: "Musique 1",
@@ -18,7 +17,9 @@ const tracks = [
     isFree: false,
   },
 ];
-
-export default function AudioSection() {
-  return <Player tracks={tracks} title={"Nos Sons Produits"} href={"/songs"}/>
+    return<>
+    <div className="container">
+        <Player title={"Liste des musiques"} href={"#"} tracks={tracks}/>
+    </div>
+    </>
 }
